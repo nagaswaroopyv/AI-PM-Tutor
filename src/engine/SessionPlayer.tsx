@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle, ArrowLeft } from 'lucide-react'
 import type { SessionData } from '../types'
@@ -7,6 +7,7 @@ import InterviewDecoder from '../components/widgets/InterviewDecoder'
 import ConceptCard from '../components/ConceptCard'
 import DecisionTree from '../components/DecisionTree'
 import Quiz from '../components/Quiz'
+import { useVoiceContext } from '../context/VoiceContext'
 
 type Phase = 'widget' | 'concept' | 'tree' | 'quiz' | 'done'
 
@@ -20,8 +21,25 @@ interface Props {
 export default function SessionPlayer({ session, stageTitle, onBack, onComplete }: Props) {
   const [phase, setPhase] = useState<Phase>('widget')
   const [xpEarned, setXpEarned] = useState(0)
+  const { speak, stop } = useVoiceContext()
 
   const addXP = (amount: number) => setXpEarned(x => x + amount)
+
+  // Auto-play voice narration when phase changes
+  useEffect(() => {
+    const script = session.voiceScript
+    if (!script) return
+    const phaseKey = phase as keyof typeof script
+    const voice = script[phaseKey]
+    if (voice) {
+      // Small delay so animation starts first
+      const t = setTimeout(() => speak(voice.text, voice.character), 400)
+      return () => clearTimeout(t)
+    }
+  }, [phase, session.voiceScript, speak])
+
+  // Stop narration when leaving the session
+  useEffect(() => () => stop(), [stop])
 
   const renderWidget = () => {
     const props = {

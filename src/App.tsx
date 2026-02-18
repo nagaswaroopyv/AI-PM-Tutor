@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { BookOpen, Zap } from 'lucide-react'
 import StageMap from './components/StageMap'
 import SessionPlayer from './engine/SessionPlayer'
+import VoiceToggle from './components/VoiceToggle'
+import { VoiceProvider } from './context/VoiceContext'
 import stage01 from './data/stage-01'
 import type { AppProgress } from './types'
 
@@ -57,6 +59,7 @@ export default function App() {
   })()
 
   return (
+    <VoiceProvider>
     <div className="min-h-screen bg-bg text-text">
 
       {/* Header */}
@@ -71,6 +74,7 @@ export default function App() {
           </button>
 
           <div className="flex items-center gap-4">
+            <VoiceToggle />
             <div className="flex items-center gap-1.5">
               <Zap size={14} className="text-warning" />
               <span className="text-sm font-mono text-text">{progress.totalXP} XP</span>
@@ -129,5 +133,6 @@ export default function App() {
         </div>
       </footer>
     </div>
+    </VoiceProvider>
   )
 }

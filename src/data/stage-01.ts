@@ -208,6 +208,25 @@ there are 400 courses and no structure." What's your next move?`,
         },
       },
 
+      voiceScript: {
+        widget: {
+          character: 'narrator',
+          text: `Monday morning. You open Slack and find a message from Priya, your CPO. She's just back from an offsite and she's excited. Read each statement carefully and classify it — is it a real observable problem, an unvalidated assumption, a solution disguised as a problem, or critical missing information? Most teams skip this step. You won't.`,
+        },
+        concept: {
+          character: 'narrator',
+          text: `Problem framing. The ask on your Slack is never the real problem — your job is to find it. A well-framed problem is specific, measurable, and solution-free. Without this discipline, teams build technically excellent products that solve the wrong thing, and only discover it after they've shipped.`,
+        },
+        tree: {
+          character: 'narrator',
+          text: `Priya wants a brief by Friday on how SkillPath will use AI to improve learner success. You've just separated the real problems from the assumptions. Now — what's your first move?`,
+        },
+        quiz: {
+          character: 'narrator',
+          text: `Two more scenarios. Different industries, same pattern. A brief that feels clear isn't always well-framed. Let's find out if you can spot the difference.`,
+        },
+      },
+
       quiz: [
         {
           id: 'q1-1',
@@ -556,6 +575,25 @@ How do you respond?`,
             explanation: `The research gave you the answer before the build started. Attributing failure to model quality — when the root cause was solving the wrong problem — leads teams to invest another two quarters refining a solution to a problem users don't actually have.`,
             xp: 20,
           },
+        },
+      },
+
+      voiceScript: {
+        widget: {
+          character: 'narrator',
+          text: `You spent the last five days interviewing Axis Corp learners who churned within eight weeks. Five people. Five different stories. For each quote, your job is to identify the underlying job — not what they said they wanted, but what they actually needed SkillPath to do for them.`,
+        },
+        concept: {
+          character: 'narrator',
+          text: `User pain mapping. What users say they want is rarely what they actually need. People hire products to do a specific job. When a SkillPath learner enrols, they're not hiring it for content — they're hiring it to get better at their job and prove it to their manager. The moment the product stops doing that job, they fire it. Churn isn't disengagement. It's a resignation letter.`,
+        },
+        tree: {
+          character: 'narrator',
+          text: `Ten interviews done. Seven of ten described some version of — I couldn't see how this connected to my career. Only two mentioned not knowing which course to take next. You're presenting to Priya tomorrow. The CPO already expects a recommendation engine. What does the evidence say?`,
+        },
+        quiz: {
+          character: 'narrator',
+          text: `Two more scenarios. Same JTBD lens — different industries. Does the proposed solution match the actual job being hired for?`,
         },
       },
 
