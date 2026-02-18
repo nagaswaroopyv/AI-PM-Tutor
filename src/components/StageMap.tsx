@@ -1,24 +1,143 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Lock, ChevronRight, CheckCircle, Circle } from 'lucide-react'
+import { Lock, ChevronRight, CheckCircle, Circle, RotateCcw } from 'lucide-react'
 import type { StageData, AppProgress } from '../types'
 
-// ─── All 10 stages in the curriculum (only stage 1 has content yet) ───────────
-const STAGE_OUTLINE = [
-  { stageNumber: 1, title: 'Discovery',              subtitle: 'Earn the right to the problem before you think about solutions.' },
-  { stageNumber: 2, title: 'Ideation',               subtitle: 'Size the opportunity and decide what\'s worth building.' },
-  { stageNumber: 3, title: 'Risk & Feasibility',     subtitle: 'What could kill this — technically, financially, legally?' },
-  { stageNumber: 4, title: 'PRD',                    subtitle: 'Write it down so everyone builds the same thing you\'re imagining.' },
-  { stageNumber: 5, title: 'Data Strategy',          subtitle: 'The stage that separates AI PMs from regular PMs.' },
-  { stageNumber: 6, title: 'Development',            subtitle: 'You\'re the translation layer between business and the team building it.' },
-  { stageNumber: 7, title: 'Evaluation & Testing',   subtitle: 'In AI, testing starts before release and never fully ends.' },
-  { stageNumber: 8, title: 'Release',                subtitle: 'The moment most teams under-prepare for.' },
-  { stageNumber: 9, title: 'PMF',                    subtitle: 'You\'ve shipped. Are people actually staying?' },
-  { stageNumber: 10, title: 'Post-Launch',           subtitle: 'Growth comes from what you do after you ship.' },
+// ─── Full 32-session curriculum ───────────────────────────────────────────────
+// Spaced repetition markers show when a concept returns in a new context:
+//   ↩ = revisits an earlier concept with more complexity
+
+const STAGE_OUTLINE: {
+  stageNumber: number
+  title: string
+  subtitle: string
+  interviewWeight: 'core' | 'high' | 'medium'
+  sessions: { title: string; spaced?: string }[]
+}[] = [
+  {
+    stageNumber: 1,
+    title: 'Discovery',
+    subtitle: 'Earn the right to the problem before you think about solutions.',
+    interviewWeight: 'core',
+    sessions: [
+      { title: 'Problem Framing' },
+      { title: 'User Pain Mapping' },
+      { title: 'Stakeholder Alignment' },
+    ],
+  },
+  {
+    stageNumber: 2,
+    title: 'Ideation',
+    subtitle: 'Size the opportunity and decide what is worth building.',
+    interviewWeight: 'high',
+    sessions: [
+      { title: 'Market Sizing' },
+      { title: 'Opportunity Scoring' },
+      { title: 'AI vs. Rules vs. No-Build', spaced: 'Revisits Problem Framing — now with solution options' },
+      { title: 'GenAI Fit — Foundation Model or Custom?' },
+    ],
+  },
+  {
+    stageNumber: 3,
+    title: 'Risk & Feasibility',
+    subtitle: 'What could kill this — technically, financially, legally?',
+    interviewWeight: 'core',
+    sessions: [
+      { title: 'Pre-Build Profitability' },
+      { title: 'Technical Feasibility & Build vs. Buy' },
+      { title: 'Responsible AI & Bias Risk' },
+      { title: 'Risk Matrix & Go / No-Go' },
+    ],
+  },
+  {
+    stageNumber: 4,
+    title: 'PRD',
+    subtitle: 'Write it down so everyone builds the same thing you are imagining.',
+    interviewWeight: 'core',
+    sessions: [
+      { title: 'Success Metrics for AI Features', spaced: 'Revisits Problem Framing — definition IS the metric' },
+      { title: 'Target Variable & Model Spec', spaced: 'Revisits AI vs. Rules — is ML still the right call?' },
+      { title: 'MVP Scoping for AI' },
+      { title: 'Acceptance Criteria for AI Features' },
+    ],
+  },
+  {
+    stageNumber: 5,
+    title: 'Data Strategy',
+    subtitle: 'The stage that separates AI PMs from regular PMs.',
+    interviewWeight: 'high',
+    sessions: [
+      { title: 'Data Sourcing & Quality' },
+      { title: 'Feature Selection & Proxy Risk', spaced: 'Revisits Responsible AI — bias lives in features' },
+      { title: 'RAG vs. Fine-Tuning vs. Prompt Engineering' },
+    ],
+  },
+  {
+    stageNumber: 6,
+    title: 'Development',
+    subtitle: 'You are the translation layer between business and the team building it.',
+    interviewWeight: 'medium',
+    sessions: [
+      { title: 'PM-to-DS Translation', spaced: 'Revisits AI vs. Rules — validate the ML assumption' },
+      { title: 'Model Tradeoffs — Accuracy, Speed, Cost, Explainability' },
+      { title: 'LLM Economics — Token Cost, Latency, ROI', spaced: 'Revisits Pre-Build Profitability' },
+    ],
+  },
+  {
+    stageNumber: 7,
+    title: 'Evaluation & Testing',
+    subtitle: 'In AI, testing starts before release and never fully ends.',
+    interviewWeight: 'core',
+    sessions: [
+      { title: 'Offline Metrics in Plain English — Precision, Recall, F1, AUC' },
+      { title: 'A/B Test Design for AI Features' },
+      { title: 'Reading Results — Significance, Effect Size, Guardrails', spaced: 'Revisits Success Metrics — measuring what you defined?' },
+      { title: 'AI-Specific Testing — Shadow Mode, Canary, Bias Audit', spaced: 'Revisits Responsible AI + Feature Selection' },
+    ],
+  },
+  {
+    stageNumber: 8,
+    title: 'Release',
+    subtitle: 'The moment most teams under-prepare for.',
+    interviewWeight: 'medium',
+    sessions: [
+      { title: 'Rollout Strategy — Flags, Phased, Fallback' },
+      { title: 'GTM for AI — Trust, Expectations, When It Is Wrong' },
+    ],
+  },
+  {
+    stageNumber: 9,
+    title: 'PMF',
+    subtitle: 'You have shipped. Are people actually staying?',
+    interviewWeight: 'high',
+    sessions: [
+      { title: 'PMF Signals for AI Products', spaced: 'Revisits Success Metrics — are these the right ones?' },
+      { title: 'Cohort & Retention Analysis' },
+      { title: 'Pivot vs. Persist', spaced: 'Revisits Problem Framing — was the original framing right?' },
+    ],
+  },
+  {
+    stageNumber: 10,
+    title: 'Post-Launch',
+    subtitle: 'Growth comes from what you do after you ship.',
+    interviewWeight: 'core',
+    sessions: [
+      { title: 'Post-Launch Profitability', spaced: 'Revisits Pre-Build Profitability + LLM Economics' },
+      { title: 'Model Drift & Degradation — Detect, Diagnose, Retrain', spaced: 'Revisits Offline Metrics — which metric is decaying?' },
+    ],
+  },
 ]
 
+// ─── Interview weight config ──────────────────────────────────────────────────
+const WEIGHT_CONFIG = {
+  core:   { label: 'Core interview topic', color: 'text-danger',  bg: 'bg-danger/10',  border: 'border-danger/30'  },
+  high:   { label: 'Frequently asked',     color: 'text-warning', bg: 'bg-warning/10', border: 'border-warning/30' },
+  medium: { label: 'Good to know',         color: 'text-muted',   bg: 'bg-surface',    border: 'border-border'     },
+}
+
+// ─── Props ────────────────────────────────────────────────────────────────────
 interface Props {
-  stages: StageData[]          // loaded stage data (currently only stage 1)
+  stages: StageData[]
   progress: AppProgress
   onStartSession: (stageNumber: number, sessionId: string) => void
 }
@@ -29,72 +148,97 @@ export default function StageMap({ stages, progress, onStartSession }: Props) {
   const stageDataMap = Object.fromEntries(stages.map(s => [s.stageNumber, s]))
   const completedIds = new Set(progress.completedSessions.map(s => s.sessionId))
 
-  return (
-    <div className="max-w-2xl mx-auto space-y-3">
+  const totalSessions = STAGE_OUTLINE.reduce((sum, s) => sum + s.sessions.length, 0)
+  const completedCount = progress.completedSessions.length
 
-      {/* Intro */}
-      <div className="mb-8 space-y-1">
+  return (
+    <div className="max-w-2xl mx-auto space-y-2">
+
+      {/* Header */}
+      <div className="mb-8 space-y-3">
         <p className="text-xs font-mono text-muted uppercase tracking-widest">Curriculum</p>
-        <h1 className="font-display text-3xl text-text">AI PM Simulator</h1>
-        <p className="text-sm text-muted">
-          32 sessions · 10 lifecycle stages · One company from ideation to post-launch
+        <h1 className="font-display text-3xl text-text">AI PM Tutor</h1>
+        <p className="text-sm text-muted leading-relaxed">
+          32 sessions across 10 lifecycle stages. One company — SkillPath — from
+          a vague brief to a shipped AI product. Built around what interviewers actually ask.
         </p>
-        <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 bg-accent/10 border border-accent/20 rounded-full">
-          <div className="w-1.5 h-1.5 bg-accent rounded-full" />
-          <span className="text-xs font-mono text-accent">SkillPath · EdTech / Upskilling</span>
+
+        {/* Progress bar */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between">
+            <span className="text-xs font-mono text-muted">{completedCount} of {totalSessions} sessions</span>
+            <span className="text-xs font-mono text-accent">{progress.totalXP} XP</span>
+          </div>
+          <div className="w-full bg-border rounded-full h-1.5">
+            <motion.div
+              className="bg-accent h-1.5 rounded-full"
+              animate={{ width: `${(completedCount / totalSessions) * 100}%` }}
+              transition={{ duration: 0.6 }}
+            />
+          </div>
+        </div>
+
+        {/* Legend */}
+        <div className="flex flex-wrap gap-2 pt-1">
+          {Object.entries(WEIGHT_CONFIG).map(([key, cfg]) => (
+            <span
+              key={key}
+              className={`text-xs font-mono px-2 py-0.5 rounded border ${cfg.color} ${cfg.bg} ${cfg.border}`}
+            >
+              {cfg.label}
+            </span>
+          ))}
+          <span className="text-xs font-mono px-2 py-0.5 rounded border border-accent/30 text-accent bg-accent/5 flex items-center gap-1">
+            <RotateCcw size={10} /> Spaced repetition
+          </span>
         </div>
       </div>
 
       {/* Stage list */}
       {STAGE_OUTLINE.map((outline, idx) => {
         const stageData = stageDataMap[outline.stageNumber]
-        const isBuilt = !!stageData
+        const isBuilt   = !!stageData
         const isExpanded = expanded === outline.stageNumber
-        const isLocked = !isBuilt
+        const wCfg = WEIGHT_CONFIG[outline.interviewWeight]
 
-        // session completion dots
-        const totalSessions = stageData?.sessions.length ?? 3
         const completedInStage = stageData
           ? stageData.sessions.filter(s => completedIds.has(s.id)).length
           : 0
+        const totalInStage = outline.sessions.length
 
         return (
           <motion.div
             key={outline.stageNumber}
-            initial={{ opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.04 }}
+            transition={{ delay: idx * 0.03 }}
           >
-            {/* Stage row */}
+            {/* Stage header row */}
             <button
-              onClick={() => !isLocked && setExpanded(isExpanded ? null : outline.stageNumber)}
-              disabled={isLocked}
-              className={`w-full text-left p-4 bg-surface border rounded-xl transition-all flex items-center gap-4 ${
-                isExpanded
-                  ? 'border-accent/40 bg-accent/5'
-                  : isLocked
-                    ? 'border-border opacity-40 cursor-not-allowed'
-                    : 'border-border hover:border-accent/30'
+              onClick={() => setExpanded(isExpanded ? null : outline.stageNumber)}
+              className={`w-full text-left p-4 bg-surface border rounded-xl transition-all flex items-center gap-3 ${
+                isExpanded ? 'border-accent/40 bg-accent/5 rounded-b-none' : 'border-border hover:border-accent/30'
               }`}
             >
-              {/* Stage number badge */}
-              <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 font-mono text-sm font-medium border ${
+              {/* Stage number */}
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 font-mono text-xs font-bold border transition-colors ${
                 isExpanded
                   ? 'bg-accent text-bg border-accent'
-                  : isLocked
-                    ? 'bg-border/30 text-muted border-border'
-                    : 'bg-surface text-muted border-border'
+                  : 'bg-bg text-muted border-border'
               }`}>
-                {isLocked ? <Lock size={14} /> : outline.stageNumber}
+                {outline.stageNumber}
               </div>
 
               {/* Stage info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-medium text-text">{outline.title}</p>
+              <div className="flex-1 min-w-0 text-left">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-sm font-medium text-text">{outline.title}</span>
+                  <span className={`text-xs font-mono px-1.5 py-0.5 rounded border ${wCfg.color} ${wCfg.bg} ${wCfg.border}`}>
+                    {wCfg.label}
+                  </span>
                   {!isBuilt && (
-                    <span className="text-xs font-mono text-muted border border-border rounded px-1.5 py-0.5">
-                      Coming soon
+                    <span className="flex items-center gap-1 text-xs font-mono text-muted border border-border rounded px-1.5 py-0.5">
+                      <Lock size={9} /> Coming soon
                     </span>
                   )}
                 </div>
@@ -102,68 +246,106 @@ export default function StageMap({ stages, progress, onStartSession }: Props) {
               </div>
 
               {/* Session dots + chevron */}
-              <div className="flex items-center gap-3 flex-shrink-0">
+              <div className="flex items-center gap-2.5 flex-shrink-0">
                 <div className="flex gap-1">
-                  {Array.from({ length: totalSessions }).map((_, i) => (
-                    i < completedInStage
+                  {outline.sessions.map((_, i) => {
+                    const sessionId = `${outline.stageNumber}.${i + 1}`
+                    const done = completedIds.has(sessionId)
+                    return done
                       ? <div key={i} className="w-1.5 h-1.5 rounded-full bg-success" />
                       : <div key={i} className="w-1.5 h-1.5 rounded-full bg-border" />
-                  ))}
+                  })}
                 </div>
-                {!isLocked && (
-                  <ChevronRight
-                    size={16}
-                    className={`text-muted transition-transform ${isExpanded ? 'rotate-90' : ''}`}
-                  />
-                )}
+                <ChevronRight
+                  size={15}
+                  className={`text-muted transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}
+                />
               </div>
             </button>
 
             {/* Expanded: session list */}
             <AnimatePresence>
-              {isExpanded && stageData && (
+              {isExpanded && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="overflow-hidden"
+                  transition={{ duration: 0.18 }}
+                  className="overflow-hidden border border-t-0 border-accent/20 rounded-b-xl bg-bg"
                 >
-                  <div className="mt-1 ml-4 pl-4 border-l border-border space-y-1 pb-2">
+                  <div className="px-4 pb-4 pt-3 space-y-1">
 
-                    {/* Scenario hook */}
-                    <div className="py-3 pr-2">
-                      <p className="text-xs font-mono text-muted uppercase tracking-wider mb-1">
-                        {stageData.scenario.company} · {stageData.scenario.industry}
-                      </p>
-                      <p className="text-xs text-subtle leading-relaxed">{stageData.scenario.hook}</p>
-                    </div>
+                    {/* Scenario hook (only for built stages) */}
+                    {stageData && (
+                      <div className="pb-3 border-b border-border mb-3">
+                        <p className="text-xs font-mono text-muted uppercase tracking-wider mb-1">
+                          {stageData.scenario.company} · {stageData.scenario.industry}
+                        </p>
+                        <p className="text-xs text-subtle leading-relaxed">{stageData.scenario.hook}</p>
+                      </div>
+                    )}
 
                     {/* Sessions */}
-                    {stageData.sessions.map(session => {
-                      const isDone = completedIds.has(session.id)
+                    {outline.sessions.map((session, i) => {
+                      const sessionId = `${outline.stageNumber}.${i + 1}`
+                      const isDone    = completedIds.has(sessionId)
+                      const builtSession = stageData?.sessions.find(s => s.id === sessionId)
+                      const isPlayable  = !!builtSession
+
                       return (
-                        <button
-                          key={session.id}
-                          onClick={() => onStartSession(outline.stageNumber, session.id)}
-                          className="w-full text-left flex items-center gap-3 p-3 rounded-xl border border-border bg-bg hover:border-accent/40 hover:bg-accent/5 transition-all group"
+                        <div
+                          key={sessionId}
+                          onClick={() => isPlayable && onStartSession(outline.stageNumber, sessionId)}
+                          className={`flex items-start gap-3 p-3 rounded-xl border transition-all group ${
+                            isPlayable
+                              ? 'border-border bg-surface hover:border-accent/40 hover:bg-accent/5 cursor-pointer'
+                              : 'border-border/50 bg-surface/50 opacity-60 cursor-default'
+                          }`}
                         >
-                          <span className="text-xs font-mono text-muted w-6 flex-shrink-0">
-                            {session.id}
+                          {/* Session ID */}
+                          <span className="text-xs font-mono text-muted w-6 flex-shrink-0 mt-0.5">
+                            {sessionId}
                           </span>
-                          <span className="text-sm text-subtle group-hover:text-text transition-colors flex-1">
-                            {session.title}
-                          </span>
+
+                          {/* Session title + spaced repetition tag */}
+                          <div className="flex-1 min-w-0">
+                            <p className={`text-sm transition-colors ${
+                              isPlayable ? 'text-subtle group-hover:text-text' : 'text-muted'
+                            }`}>
+                              {session.title}
+                            </p>
+                            {session.spaced && (
+                              <p className="text-xs text-accent/70 mt-0.5 flex items-center gap-1">
+                                <RotateCcw size={9} />
+                                {session.spaced}
+                              </p>
+                            )}
+                          </div>
+
+                          {/* XP + status */}
                           <div className="flex items-center gap-2 flex-shrink-0">
-                            <span className="text-xs font-mono text-muted">{session.totalXP} XP</span>
-                            {isDone
-                              ? <CheckCircle size={14} className="text-success" />
-                              : <Circle size={14} className="text-muted" />
+                            {builtSession && (
+                              <span className="text-xs font-mono text-muted">
+                                {builtSession.totalXP} XP
+                              </span>
+                            )}
+                            {!isPlayable
+                              ? <Lock size={12} className="text-muted/40" />
+                              : isDone
+                                ? <CheckCircle size={14} className="text-success" />
+                                : <Circle size={14} className="text-muted" />
                             }
                           </div>
-                        </button>
+                        </div>
                       )
                     })}
+
+                    {/* Stage completion summary */}
+                    {isBuilt && (
+                      <p className="text-xs text-muted font-mono pt-1 text-right">
+                        {completedInStage} / {totalInStage} completed
+                      </p>
+                    )}
                   </div>
                 </motion.div>
               )}
