@@ -152,6 +152,22 @@ export default function SessionPlayer({ session, stageTitle, onBack, onComplete 
               onComplete={(xp) => { addXP(xp); setPhase('done') }}
             />
           )}
+
+          {/* Skip link — lets you advance past any phase without completing it */}
+          {(phase === 'widget' || phase === 'concept' || phase === 'tree') && (
+            <div className="flex justify-end pt-1">
+              <button
+                onClick={() => {
+                  if (phase === 'widget')  setPhase('concept')
+                  if (phase === 'concept') setPhase(session.decisionTree ? 'tree' : 'quiz')
+                  if (phase === 'tree')    setPhase('quiz')
+                }}
+                className="text-xs text-muted/40 hover:text-muted font-mono transition-colors"
+              >
+                skip →
+              </button>
+            </div>
+          )}
         </motion.div>
       </AnimatePresence>
 
