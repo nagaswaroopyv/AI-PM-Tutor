@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle, ArrowLeft } from 'lucide-react'
-import type { SessionData } from '../types'
+import type { SessionData, VoiceScript } from '../types'
 import BriefClassifier from '../components/widgets/BriefClassifier'
 import InterviewDecoder from '../components/widgets/InterviewDecoder'
 import ConceptCard from '../components/ConceptCard'
 import DecisionTree from '../components/DecisionTree'
 import Quiz from '../components/Quiz'
+import NarratorPanel from '../components/NarratorPanel'
 import { useVoiceContext } from '../context/VoiceContext'
 
 type Phase = 'widget' | 'concept' | 'tree' | 'quiz' | 'done'
+type ScriptPhase = keyof VoiceScript  // 'widget' | 'concept' | 'tree' | 'quiz'
 
 interface Props {
   session: SessionData
@@ -19,33 +21,29 @@ interface Props {
 }
 
 export default function SessionPlayer({ session, stageTitle, onBack, onComplete }: Props) {
-  const [phase, setPhase] = useState<Phase>('widget')
+  const [phase, setPhase]     = useState<Phase>('widget')
   const [xpEarned, setXpEarned] = useState(0)
-  const { speak, stop } = useVoiceContext()
+  const { speak, stop }       = useVoiceContext()
 
   const addXP = (amount: number) => setXpEarned(x => x + amount)
 
-  // Auto-play voice narration when phase changes
+  // Current phase voice (undefined for 'done' phase)
+  const currentVoice = phase !== 'done'
+    ? session.voiceScript?.[phase as ScriptPhase]
+    : undefined
+
+  // Auto-play when phase changes
   useEffect(() => {
-    const script = session.voiceScript
-    if (!script) return
-    const phaseKey = phase as keyof typeof script
-    const voice = script[phaseKey]
-    if (voice) {
-      // Small delay so animation starts first
-      const t = setTimeout(() => speak(voice.text, voice.character), 400)
-      return () => clearTimeout(t)
-    }
-  }, [phase, session.voiceScript, speak])
+    if (!currentVoice) return
+    const t = setTimeout(() => speak(currentVoice.text, currentVoice.character), 400)
+    return () => clearTimeout(t)
+  }, [phase, currentVoice, speak])
 
   // Stop narration when leaving the session
   useEffect(() => () => stop(), [stop])
 
   const renderWidget = () => {
-    const props = {
-      widget: session.widget,
-      onComplete: () => setPhase('concept'),
-    }
+    const props = { widget: session.widget, onComplete: () => setPhase('concept') }
     switch (session.widget.type) {
       case 'brief-classifier':  return <BriefClassifier  {...props} />
       case 'interview-decoder': return <InterviewDecoder {...props} />
@@ -53,6 +51,7 @@ export default function SessionPlayer({ session, stageTitle, onBack, onComplete 
     }
   }
 
+  // ─── Completion screen ───────────────────────────────────────────────────────
   if (phase === 'done') {
     const pct = Math.round((xpEarned / session.totalXP) * 100)
     return (
@@ -78,7 +77,6 @@ export default function SessionPlayer({ session, stageTitle, onBack, onComplete 
           </div>
         </div>
 
-        {/* Skills unlocked */}
         <div className="p-4 bg-surface border border-border rounded-xl text-left space-y-2">
           <p className="text-xs font-mono text-muted uppercase tracking-wider mb-3">Skill unlocked</p>
           <div className="flex items-start gap-3">
@@ -108,6 +106,7 @@ export default function SessionPlayer({ session, stageTitle, onBack, onComplete 
     )
   }
 
+  // ─── Active session ──────────────────────────────────────────────────────────
   return (
     <div className="max-w-2xl mx-auto space-y-6">
 
@@ -122,14 +121,24 @@ export default function SessionPlayer({ session, stageTitle, onBack, onComplete 
         </button>
 
         <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-mono text-muted uppercase tracking-widest">
-              Session {session.id}
-            </span>
-          </div>
+          <span className="text-xs font-mono text-muted uppercase tracking-widest">
+            Session {session.id}
+          </span>
           <h1 className="font-display text-3xl text-text">{session.title}</h1>
         </div>
       </div>
+
+      {/* Narrator panel — slides in/out as phase changes */}
+      <AnimatePresence mode="wait">
+        {currentVoice && (
+          <NarratorPanel
+            key={`${phase}-narrator`}
+            character={currentVoice.character}
+            text={currentVoice.text}
+            onReplay={() => speak(currentVoice.text, currentVoice.character)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Phase content */}
       <AnimatePresence mode="wait">
@@ -141,10 +150,8 @@ export default function SessionPlayer({ session, stageTitle, onBack, onComplete 
           transition={{ duration: 0.2 }}
           className="space-y-4"
         >
-          {/* Phase label */}
           <PhaseLabel phase={phase} widgetTitle={session.widget.title} />
 
-          {/* Widget */}
           {phase === 'widget' && (
             <div className="space-y-3">
               <p className="text-sm text-muted">{session.widget.subtitle}</p>
@@ -152,7 +159,6 @@ export default function SessionPlayer({ session, stageTitle, onBack, onComplete 
             </div>
           )}
 
-          {/* Concept */}
           {phase === 'concept' && (
             <ConceptCard
               concept={session.concept}
@@ -164,25 +170,17 @@ export default function SessionPlayer({ session, stageTitle, onBack, onComplete 
             />
           )}
 
-          {/* Decision tree */}
           {phase === 'tree' && session.decisionTree && (
             <DecisionTree
               tree={session.decisionTree}
-              onComplete={(xp) => {
-                addXP(xp)
-                setPhase('quiz')
-              }}
+              onComplete={(xp) => { addXP(xp); setPhase('quiz') }}
             />
           )}
 
-          {/* Quiz */}
           {phase === 'quiz' && (
             <Quiz
               questions={session.quiz}
-              onComplete={(xp) => {
-                addXP(xp)
-                setPhase('done')
-              }}
+              onComplete={(xp) => { addXP(xp); setPhase('done') }}
             />
           )}
         </motion.div>
@@ -207,11 +205,11 @@ export default function SessionPlayer({ session, stageTitle, onBack, onComplete 
 // ─── Phase label ──────────────────────────────────────────────────────────────
 function PhaseLabel({ phase, widgetTitle }: { phase: Phase; widgetTitle: string }) {
   const labels: Record<Phase, { tag: string; title: string; color: string }> = {
-    widget:  { tag: '01', title: widgetTitle,   color: 'text-accent' },
-    concept: { tag: '02', title: 'Concept',      color: 'text-warning' },
-    tree:    { tag: '03', title: 'Scenario',     color: 'text-success' },
-    quiz:    { tag: '04', title: 'Apply it',     color: 'text-success' },
-    done:    { tag: '✓',  title: 'Complete',     color: 'text-success' },
+    widget:  { tag: '01', title: widgetTitle, color: 'text-accent'   },
+    concept: { tag: '02', title: 'Concept',   color: 'text-warning'  },
+    tree:    { tag: '03', title: 'Scenario',  color: 'text-success'  },
+    quiz:    { tag: '04', title: 'Apply it',  color: 'text-success'  },
+    done:    { tag: '✓',  title: 'Complete',  color: 'text-success'  },
   }
   const l = labels[phase]
   return (

@@ -1,9 +1,10 @@
 import React, { createContext, useContext } from 'react'
-import { useVoice } from '../hooks/useVoice'
+import { useSarvamVoice } from '../hooks/useSarvamVoice'
 import type { VoiceCharacter } from '../types'
 
 interface VoiceContextValue {
   muted: boolean
+  speaking: boolean
   speak: (text: string, character?: VoiceCharacter) => void
   stop: () => void
   toggleMute: () => void
@@ -12,7 +13,7 @@ interface VoiceContextValue {
 const VoiceContext = createContext<VoiceContextValue | null>(null)
 
 export function VoiceProvider({ children }: { children: React.ReactNode }) {
-  const voice = useVoice()
+  const voice = useSarvamVoice()
   return <VoiceContext.Provider value={voice}>{children}</VoiceContext.Provider>
 }
 
