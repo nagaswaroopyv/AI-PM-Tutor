@@ -2,38 +2,49 @@
 export interface ConceptCard {
   id: string
   term: string
-  tagline: string          // one-line hook
-  definition: string       // 2-3 sentences, plain English
-  mentalModel: string      // the analogy (e.g. "Think of it like a vending machine")
-  pmTakeaway: string       // exact phrase to use in a real meeting
-  category: 'foundation' | 'data' | 'model' | 'evaluation' | 'production' | 'genai' | 'agents'
+  tagline: string
+  definition: string
+  mentalModel: string
+  pmTakeaway: string
+  category:
+    | 'discovery'
+    | 'ideation'
+    | 'risk'
+    | 'prd'
+    | 'data'
+    | 'development'
+    | 'evaluation'
+    | 'release'
+    | 'pmf'
+    | 'optimization'
 }
 
-// ─── Interactive widget descriptor ─────────────────────────────────────────
+// ─── Widget types ────────────────────────────────────────────────────────────
 export type WidgetType =
+  | 'brief-classifier'
   | 'threshold-slider'
   | 'drag-rank'
-  | 'decision-tree'
+  | 'unit-economics'
+  | 'ab-test-designer'
   | 'confusion-builder'
-  | 'token-counter'
   | 'cost-calculator'
 
 export interface Widget {
   type: WidgetType
   title: string
   subtitle: string
-  config: Record<string, unknown>   // widget-specific config
+  config: Record<string, unknown>
 }
 
-// ─── Decision tree node ─────────────────────────────────────────────────────
+// ─── Decision tree ────────────────────────────────────────────────────────────
 export interface TreeNode {
   id: string
   question: string
   hint?: string
   options: {
     label: string
-    nextId: string | 'end-good' | 'end-bad' | 'end-ok'
-    consequence?: string   // shown after selection
+    nextId: string
+    consequence?: string
   }[]
 }
 
@@ -48,10 +59,10 @@ export interface DecisionTree {
   }>
 }
 
-// ─── Quiz question ───────────────────────────────────────────────────────────
+// ─── Quiz ─────────────────────────────────────────────────────────────────────
 export interface QuizQuestion {
   id: string
-  scenario: string         // fresh industry context
+  scenario: string
   question: string
   options: {
     label: string
@@ -61,34 +72,38 @@ export interface QuizQuestion {
   xp: number
 }
 
-// ─── A single concept cluster within a day ──────────────────────────────────
-export interface ConceptCluster {
-  id: string
+// ─── Session (a single ~20-min learning session) ──────────────────────────────
+export interface SessionData {
+  id: string           // e.g. "1.1", "2.3"
+  title: string
+  totalXP: number
   widget: Widget
   concept: ConceptCard
   decisionTree?: DecisionTree
   quiz: QuizQuestion[]
 }
 
-// ─── Full day definition ─────────────────────────────────────────────────────
-export interface DayData {
-  dayNumber: number
+// ─── Stage (a lifecycle phase containing sessions) ────────────────────────────
+export interface StageData {
+  stageNumber: number
   title: string
   subtitle: string
   scenario: {
-    industry: string
     company: string
-    hook: string           // 1-2 sentence situation that frames the day
+    industry: string
+    hook: string
   }
-  clusters: ConceptCluster[]
-  totalXP: number
+  sessions: SessionData[]
 }
 
-// ─── Learner progress ────────────────────────────────────────────────────────
-export interface DayProgress {
-  dayNumber: number
-  completedClusters: string[]
+// ─── Progress tracking ────────────────────────────────────────────────────────
+export interface SessionProgress {
+  sessionId: string
   xpEarned: number
-  quizScores: Record<string, number>
   completedAt?: string
+}
+
+export interface AppProgress {
+  completedSessions: SessionProgress[]
+  totalXP: number
 }
