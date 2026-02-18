@@ -73,21 +73,6 @@ export interface QuizQuestion {
   xp: number
 }
 
-// ─── Voice narration ──────────────────────────────────────────────────────────
-export type VoiceCharacter = 'narrator' | 'priya' | 'learner'
-
-export interface PhaseVoice {
-  character: VoiceCharacter
-  text: string
-}
-
-export interface VoiceScript {
-  widget?: PhaseVoice
-  concept?: PhaseVoice
-  tree?: PhaseVoice
-  quiz?: PhaseVoice
-}
-
 // ─── Session (a single ~20-min learning session) ──────────────────────────────
 export interface SessionData {
   id: string           // e.g. "1.1", "2.3"
@@ -97,7 +82,6 @@ export interface SessionData {
   concept: ConceptCard
   decisionTree?: DecisionTree
   quiz: QuizQuestion[]
-  voiceScript?: VoiceScript
 }
 
 // ─── Stage (a lifecycle phase containing sessions) ────────────────────────────

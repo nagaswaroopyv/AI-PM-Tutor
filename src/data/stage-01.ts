@@ -208,25 +208,6 @@ there are 400 courses and no structure." What's your next move?`,
         },
       },
 
-      voiceScript: {
-        widget: {
-          character: 'narrator',
-          text: `Monday morning. You open Slack and find a message from Priya, your CPO. She's just back from an offsite and she's excited. Read each statement carefully and classify it — is it a real observable problem, an unvalidated assumption, a solution disguised as a problem, or critical missing information? Most teams skip this step. You won't.`,
-        },
-        concept: {
-          character: 'narrator',
-          text: `Problem framing. The ask on your Slack is never the real problem — your job is to find it. A well-framed problem is specific, measurable, and solution-free. Without this discipline, teams build technically excellent products that solve the wrong thing, and only discover it after they've shipped.`,
-        },
-        tree: {
-          character: 'narrator',
-          text: `Priya wants a brief by Friday on how SkillPath will use AI to improve learner success. You've just separated the real problems from the assumptions. Now — what's your first move?`,
-        },
-        quiz: {
-          character: 'narrator',
-          text: `Two more scenarios. Different industries, same pattern. A brief that feels clear isn't always well-framed. Let's find out if you can spot the difference.`,
-        },
-      },
-
       quiz: [
         {
           id: 'q1-1',
@@ -238,17 +219,12 @@ asks the PM to kick off vendor evaluation.`,
             {
               label: 'Begin vendor evaluation — the problem is clearly defined and the solution direction is reasonable.',
               correct: false,
-              explanation: `The problem isn't clearly defined. The VP has described a symptom ("inefficient routes"), assumed a cause ("drivers choosing wrong routes"), and prescribed a solution ("AI software") in one sentence. Before evaluating vendors, you need to separate these.`,
+              explanation: `The problem isn't clearly defined. The VP has described a symptom ("inefficient routes"), assumed a cause ("drivers choosing wrong routes"), and prescribed a solution ("AI software") in one sentence. Before evaluating vendors, you need to separate these. Vendor evaluation before that validation is building on a guess.`,
             },
             {
               label: 'Ask: "How do we know it\'s route selection causing the inefficiency? What does the GPS and dispatch data show, and have we spoken to drivers?"',
               correct: true,
-              explanation: `Correct. The VP has jumped from symptom to solution without validating the cause. Inefficiency could be bad routes, traffic data quality, dispatch timing, driver constraints, or vehicle issues. Vendor evaluation before that validation is building on a guess.`,
-            },
-            {
-              label: 'Write a PRD for a route optimisation feature and get engineering estimates.',
-              correct: false,
-              explanation: `Writing a PRD locks the team into a solution before the cause is validated. A PRD based on an unverified assumption is a document of guesses — and effort estimates create pressure to continue even if discovery later reveals the wrong direction.`,
+              explanation: `The VP has jumped from symptom to solution without validating the cause. Inefficiency could be bad routes, traffic data quality, dispatch timing, driver constraints, or vehicle issues. Separating these is the first move before any vendor conversations.`,
             },
           ],
           xp: 75,
@@ -261,19 +237,14 @@ The PM adds it to the next sprint as the primary goal.`,
           question: 'What\'s the problem framing issue here, if any?',
           options: [
             {
-              label: 'None — the CEO identified a real, quantified pain (23% no-shows) with clear revenue impact.',
+              label: 'None — the CEO identified a real, quantified pain (23% no-shows) with clear revenue impact. The ML model is a reasonable solution.',
               correct: false,
               explanation: `The pain is real and quantified — that part is correct. But the CEO has also prescribed the solution: an ML prediction model. A well-framed problem doesn't include a solution. The PM should separate the pain from the prescription before committing to any build.`,
             },
             {
-              label: 'The CEO identified real pain but embedded a solution. Before building a prediction model, the PM should ask: what action will we take on the prediction — and is ML the right tool for that action?',
+              label: 'The CEO identified real pain but embedded a solution. Before building a prediction model, ask: what action will we take on the prediction — and is ML the right tool for that action?',
               correct: true,
-              explanation: `Exactly. A prediction is only useful if it drives action. If the action is "send a reminder 48 hours before," a simple rule ("patient has missed 2+ appointments before → send reminder") might outperform an ML model at a fraction of the cost and complexity. The PM should validate the intervention before validating the model.`,
-            },
-            {
-              label: 'The problem needs more data — 23% is a single metric and doesn\'t reveal root cause.',
-              correct: false,
-              explanation: `More data is useful, but the core framing issue isn't data insufficiency — it\'s that the CEO has conflated the problem with the solution. Gathering more data before separating those two things won't fix the framing.`,
+              explanation: `A prediction is only useful if it drives action. If the action is "send a reminder 48 hours before," a simple rule ("patient has missed 2+ appointments → send reminder") might outperform an ML model at a fraction of the cost. Validate the intervention before validating the model.`,
             },
           ],
           xp: 75,
@@ -578,25 +549,6 @@ How do you respond?`,
         },
       },
 
-      voiceScript: {
-        widget: {
-          character: 'narrator',
-          text: `You spent the last five days interviewing Axis Corp learners who churned within eight weeks. Five people. Five different stories. For each quote, your job is to identify the underlying job — not what they said they wanted, but what they actually needed SkillPath to do for them.`,
-        },
-        concept: {
-          character: 'narrator',
-          text: `User pain mapping. What users say they want is rarely what they actually need. People hire products to do a specific job. When a SkillPath learner enrols, they're not hiring it for content — they're hiring it to get better at their job and prove it to their manager. The moment the product stops doing that job, they fire it. Churn isn't disengagement. It's a resignation letter.`,
-        },
-        tree: {
-          character: 'narrator',
-          text: `Ten interviews done. Seven of ten described some version of — I couldn't see how this connected to my career. Only two mentioned not knowing which course to take next. You're presenting to Priya tomorrow. The CPO already expects a recommendation engine. What does the evidence say?`,
-        },
-        quiz: {
-          character: 'narrator',
-          text: `Two more scenarios. Same JTBD lens — different industries. Does the proposed solution match the actual job being hired for?`,
-        },
-      },
-
       quiz: [
         {
           id: 'q1-3',
@@ -609,17 +561,12 @@ restaurant actually received my order."`,
             {
               label: 'Real-time tracking solves both order confirmation and delivery location, so the AI solution addresses the pain.',
               correct: false,
-              explanation: `These are two different jobs: "confirm my order was received" and "see where my delivery is." Conflating them means building a complex solution to a simple problem. The first job is solved by an order confirmation message — 2 days of engineering. The second is real-time tracking. They are not the same.`,
+              explanation: `These are two different jobs: "confirm my order was received" and "see where my delivery is." The first is solved by an order confirmation message — 2 days of engineering. Real-time AI tracking solves a different, less urgent job. Conflating them wastes a quarter.`,
             },
             {
               label: 'The job is "confirm my order is being prepared" — not "track my delivery in real-time." An order confirmation screen solves this in days. The AI tracking solution solves a different, less urgent job.',
               correct: true,
-              explanation: `Correct. The JTBD is certainty at the moment of vulnerability (right after placing an order), not real-time visibility throughout the journey. Solving the right job is cheaper, faster, and more directly connected to the cancellation metric.`,
-            },
-            {
-              label: 'Exit interview data is unreliable at this scale — stick with the quantitative cancellation data and build the AI tracking.',
-              correct: false,
-              explanation: `Quantitative data tells you what is happening. Qualitative JTBD interviews tell you why. Discarding the why means you'll optimise for the wrong metric. The 22% cancellation rate is the signal; "not sure if restaurant got my order" is the cause.`,
+              explanation: `The JTBD is certainty at the moment of vulnerability — right after placing an order. Solving this is cheaper, faster, and more directly connected to the cancellation metric than real-time tracking across the full journey.`,
             },
           ],
           xp: 75,
@@ -632,19 +579,14 @@ auto-generate review templates." The PM is asked to scope the feature.`,
           question: 'What is the right PM response before scoping begins?',
           options: [
             {
-              label: 'Validate the "blank page" hypothesis with 6-8 JTBD interviews before scoping the AI feature. The job isn\'t "fill in a template" — it\'s "have a useful performance conversation without it being uncomfortable."',
+              label: 'Validate the "blank page" hypothesis with 6-8 JTBD interviews before scoping. The job isn\'t "fill in a template" — it\'s "have a useful performance conversation without it being uncomfortable."',
               correct: true,
-              explanation: `The CPO has a plausible hypothesis — but it's still a hypothesis. The job to be done here is much broader than the blank page: managers want performance conversations to feel worthwhile and not adversarial. An AI template might help — or the real pain might be that managers don't know what good feedback sounds like, which requires a different solution entirely.`,
+              explanation: `The CPO has a plausible hypothesis — but it's still a hypothesis. The real job may be much broader: managers want conversations to feel worthwhile, not adversarial. An AI template might help — or the real pain might be that managers don't know what good feedback sounds like, which is a different solution entirely.`,
             },
             {
               label: 'Build the AI template generator — it\'s a reasonable hypothesis and relatively low effort to test in production.',
               correct: false,
-              explanation: `Low effort to build is not the same as solving the right problem. If the job is "have a meaningful conversation" and the AI template produces generic output, completion rates may rise while quality and manager trust fall. You'd be measuring the wrong thing.`,
-            },
-            {
-              label: 'Run a survey asking managers to rate what they find most difficult about performance reviews.',
-              correct: false,
-              explanation: `Surveys confirm hypotheses — they rarely surface new ones. A manager given options like "blank page / time / knowing what to say" will pick one, not reveal that the real issue is they don't believe reviews change anything. JTBD interviews surface the job; surveys measure it.`,
+              explanation: `Low effort to build is not the same as solving the right problem. If the job is "have a meaningful conversation" and the AI template produces generic output, completion rates may rise while review quality and manager trust fall. You'd be measuring the wrong thing.`,
             },
           ],
           xp: 75,

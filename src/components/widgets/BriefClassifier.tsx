@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { CheckCircle, XCircle, AlertTriangle, Lightbulb, HelpCircle } from 'lucide-react'
+import { CheckCircle, XCircle, AlertTriangle, Lightbulb, HelpCircle, Hash } from 'lucide-react'
 import type { Widget } from '../../types'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -98,12 +98,36 @@ export default function BriefClassifier({ widget, onComplete }: Props) {
   return (
     <div className="space-y-5">
 
-      {/* CPO message card */}
-      <div className="p-4 bg-surface border border-border rounded-xl space-y-2">
-        <p className="text-xs font-mono text-muted uppercase tracking-wider">{cfg.context}</p>
-        <p className="text-sm text-subtle leading-relaxed italic whitespace-pre-line">
-          "{cfg.message}"
-        </p>
+      {/* Slack-style CPO message */}
+      <div className="bg-surface border border-border rounded-xl overflow-hidden">
+
+        {/* Channel header */}
+        <div className="px-4 py-2.5 border-b border-border bg-bg flex items-center gap-2">
+          <Hash size={13} className="text-muted" />
+          <span className="text-xs font-mono text-subtle font-medium">pm-briefs</span>
+          <span className="ml-auto text-xs text-muted font-mono">Monday morning</span>
+        </div>
+
+        {/* Message row */}
+        <div className="px-4 py-4 flex gap-3">
+
+          {/* Avatar */}
+          <div className="w-9 h-9 rounded-lg bg-warning/20 text-warning flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+            PS
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-baseline gap-2 mb-1">
+              <span className="text-sm font-semibold text-text">Priya Sharma</span>
+              <span className="text-xs text-muted font-mono">9:14 AM</span>
+              <span className="text-xs text-muted">· CPO, SkillPath</span>
+            </div>
+            <p className="text-sm text-subtle leading-relaxed whitespace-pre-line">
+              {cfg.message}
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Category legend */}

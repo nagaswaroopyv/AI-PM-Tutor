@@ -1,17 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle, ArrowLeft } from 'lucide-react'
-import type { SessionData, VoiceScript } from '../types'
+import type { SessionData } from '../types'
 import BriefClassifier from '../components/widgets/BriefClassifier'
 import InterviewDecoder from '../components/widgets/InterviewDecoder'
 import ConceptCard from '../components/ConceptCard'
 import DecisionTree from '../components/DecisionTree'
 import Quiz from '../components/Quiz'
-import NarratorPanel from '../components/NarratorPanel'
-import { useVoiceContext } from '../context/VoiceContext'
 
 type Phase = 'widget' | 'concept' | 'tree' | 'quiz' | 'done'
-type ScriptPhase = keyof VoiceScript  // 'widget' | 'concept' | 'tree' | 'quiz'
 
 interface Props {
   session: SessionData
@@ -21,25 +18,10 @@ interface Props {
 }
 
 export default function SessionPlayer({ session, stageTitle, onBack, onComplete }: Props) {
-  const [phase, setPhase]     = useState<Phase>('widget')
+  const [phase, setPhase]       = useState<Phase>('widget')
   const [xpEarned, setXpEarned] = useState(0)
-  const { speak, stop }       = useVoiceContext()
 
   const addXP = (amount: number) => setXpEarned(x => x + amount)
-
-  // Current phase voice (undefined for 'done' phase)
-  const currentVoice = phase !== 'done'
-    ? session.voiceScript?.[phase as ScriptPhase]
-    : undefined
-
-  // Auto-play when phase changes — no delay, audio timing drives the typewriter
-  useEffect(() => {
-    if (!currentVoice) return
-    speak(currentVoice.text, currentVoice.character)
-  }, [phase, currentVoice, speak])
-
-  // Stop narration when leaving the session
-  useEffect(() => () => stop(), [stop])
 
   const renderWidget = () => {
     const props = { widget: session.widget, onComplete: () => setPhase('concept') }
@@ -126,18 +108,6 @@ export default function SessionPlayer({ session, stageTitle, onBack, onComplete 
           <h1 className="font-display text-3xl text-text">{session.title}</h1>
         </div>
       </div>
-
-      {/* Narrator panel — slides in/out as phase changes */}
-      <AnimatePresence mode="wait">
-        {currentVoice && (
-          <NarratorPanel
-            key={`${phase}-narrator`}
-            character={currentVoice.character}
-            text={currentVoice.text}
-            onReplay={() => speak(currentVoice.text, currentVoice.character)}
-          />
-        )}
-      </AnimatePresence>
 
       {/* Phase content */}
       <AnimatePresence mode="wait">
