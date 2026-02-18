@@ -32,11 +32,10 @@ export default function SessionPlayer({ session, stageTitle, onBack, onComplete 
     ? session.voiceScript?.[phase as ScriptPhase]
     : undefined
 
-  // Auto-play when phase changes
+  // Auto-play when phase changes — no delay, audio timing drives the typewriter
   useEffect(() => {
     if (!currentVoice) return
-    const t = setTimeout(() => speak(currentVoice.text, currentVoice.character), 400)
-    return () => clearTimeout(t)
+    speak(currentVoice.text, currentVoice.character)
   }, [phase, currentVoice, speak])
 
   // Stop narration when leaving the session

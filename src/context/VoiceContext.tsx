@@ -1,10 +1,15 @@
 import React, { createContext, useContext } from 'react'
 import { useTTS } from '../hooks/useTTS'
+import type { PlaybackInfo } from '../hooks/useTTS'
 import type { VoiceCharacter } from '../types'
+
+export type { PlaybackInfo }
 
 interface VoiceContextValue {
   muted: boolean
   speaking: boolean
+  loading: boolean
+  playbackInfo: PlaybackInfo | null
   speak: (text: string, character?: VoiceCharacter) => void
   stop: () => void
   toggleMute: () => void
