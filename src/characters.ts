@@ -19,7 +19,7 @@ export const CHARACTERS: Record<VoiceCharacter, Character> = {
     initials: '≋',
     avatarClass: 'bg-accent/20 text-accent',
     barClass: 'bg-accent',
-    speaker: 'meera',
+    speaker: 'amelia',   // bulbul:v3 — clear, neutral English
   },
   priya: {
     id: 'priya',
@@ -28,7 +28,7 @@ export const CHARACTERS: Record<VoiceCharacter, Character> = {
     initials: 'PS',
     avatarClass: 'bg-warning/20 text-warning',
     barClass: 'bg-warning',
-    speaker: 'priya',
+    speaker: 'priya',   // bulbul:v3 — warm female, matches character name
   },
   learner: {
     id: 'learner',
@@ -37,6 +37,6 @@ export const CHARACTERS: Record<VoiceCharacter, Character> = {
     initials: '◎',
     avatarClass: 'bg-success/20 text-success',
     barClass: 'bg-success',
-    speaker: 'aditya',
+    speaker: 'aditya',  // bulbul:v3 — male, casual
   },
 }
