@@ -8,7 +8,7 @@ export interface Character {
   // Static full class strings — must be spelled out for Tailwind JIT
   avatarClass: string  // bg + text color for the avatar circle
   barClass: string     // bg color for waveform bars
-  speaker: string      // Sarvam bulbul:v3 speaker name
+  voice: string        // OpenAI TTS voice name
 }
 
 export const CHARACTERS: Record<VoiceCharacter, Character> = {
@@ -19,7 +19,7 @@ export const CHARACTERS: Record<VoiceCharacter, Character> = {
     initials: '≋',
     avatarClass: 'bg-accent/20 text-accent',
     barClass: 'bg-accent',
-    speaker: 'amelia',   // bulbul:v3 — clear, neutral English
+    voice: 'nova',      // clear, engaged female narrator
   },
   priya: {
     id: 'priya',
@@ -28,7 +28,7 @@ export const CHARACTERS: Record<VoiceCharacter, Character> = {
     initials: 'PS',
     avatarClass: 'bg-warning/20 text-warning',
     barClass: 'bg-warning',
-    speaker: 'priya',   // bulbul:v3 — warm female, matches character name
+    voice: 'shimmer',   // warm, confident female
   },
   learner: {
     id: 'learner',
@@ -37,6 +37,6 @@ export const CHARACTERS: Record<VoiceCharacter, Character> = {
     initials: '◎',
     avatarClass: 'bg-success/20 text-success',
     barClass: 'bg-success',
-    speaker: 'aditya',  // bulbul:v3 — male, casual
+    voice: 'echo',      // calm, casual male
   },
 }

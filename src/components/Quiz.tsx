@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle, XCircle } from 'lucide-react'
 import type { QuizQuestion } from '../types'
+import { useVoiceContext } from '../context/VoiceContext'
+import TypewriterText from './TypewriterText'
 
 interface Props {
   questions: QuizQuestion[]
@@ -9,23 +11,38 @@ interface Props {
 }
 
 export default function Quiz({ questions, onComplete }: Props) {
-  const [current, setCurrent] = useState(0)
+  const [current, setCurrent]   = useState(0)
   const [selected, setSelected] = useState<number | null>(null)
   const [answered, setAnswered] = useState(false)
-  const [totalXP, setTotalXP] = useState(0)
-  const [done, setDone] = useState(false)
+  const [totalXP, setTotalXP]   = useState(0)
+  const [done, setDone]         = useState(false)
+  const [feedback, setFeedback] = useState<{ text: string; correct: boolean } | null>(null)
 
+  const { speak } = useVoiceContext()
   const q = questions[current]
-  const isCorrect = selected !== null && q.options[selected]?.correct
 
   const choose = (idx: number) => {
     if (answered) return
     setSelected(idx)
     setAnswered(true)
-    if (q.options[idx]?.correct) setTotalXP(xp => xp + q.xp)
+
+    const opt        = q.options[idx]
+    const correctOpt = q.options.find(o => o.correct)
+
+    if (opt.correct) {
+      setTotalXP(xp => xp + q.xp)
+      const text = `That's right. ${opt.explanation}`
+      setFeedback({ text, correct: true })
+      speak(text, 'narrator')
+    } else {
+      const text = `Not quite. ${correctOpt?.explanation ?? opt.explanation}`
+      setFeedback({ text, correct: false })
+      speak(text, 'narrator')
+    }
   }
 
   const next = () => {
+    setFeedback(null)
     if (current < questions.length - 1) {
       setCurrent(c => c + 1)
       setSelected(null)
@@ -37,7 +54,7 @@ export default function Quiz({ questions, onComplete }: Props) {
 
   if (done) {
     const maxXP = questions.reduce((s, q) => s + q.xp, 0)
-    const pct = Math.round((totalXP / maxXP) * 100)
+    const pct   = Math.round((totalXP / maxXP) * 100)
     return (
       <motion.div
         initial={{ opacity: 0, scale: 0.97 }}
@@ -64,7 +81,7 @@ export default function Quiz({ questions, onComplete }: Props) {
         <div className="flex-1 bg-border rounded-full h-1">
           <div
             className="bg-accent h-1 rounded-full transition-all duration-500"
-            style={{ width: `${((current) / questions.length) * 100}%` }}
+            style={{ width: `${(current / questions.length) * 100}%` }}
           />
         </div>
         <span className="text-xs text-muted font-mono">{current + 1}/{questions.length}</span>
@@ -116,31 +133,43 @@ export default function Quiz({ questions, onComplete }: Props) {
                   </span>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-text">{opt.label}</p>
-                    {answered && idx === selected && (
-                      <motion.p
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        className="text-xs text-muted mt-2 leading-relaxed"
-                      >
-                        {opt.explanation}
-                      </motion.p>
-                    )}
-                    {answered && state === 'missed' && (
-                      <motion.p
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        className="text-xs text-success/80 mt-2 leading-relaxed"
-                      >
-                        ← This was the correct answer. {opt.explanation}
-                      </motion.p>
-                    )}
                   </div>
                   {answered && state === 'correct' && <CheckCircle size={16} className="text-success flex-shrink-0 mt-0.5" />}
-                  {answered && state === 'wrong'   && <XCircle size={16} className="text-danger flex-shrink-0 mt-0.5" />}
+                  {answered && state === 'wrong'   && <XCircle    size={16} className="text-danger  flex-shrink-0 mt-0.5" />}
                 </motion.button>
               )
             })}
           </div>
+
+          {/* Narrator feedback chip — speaks + types the explanation */}
+          <AnimatePresence>
+            {feedback && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 8 }}
+                transition={{ duration: 0.2 }}
+                className={`flex items-start gap-3 p-4 rounded-xl border ${
+                  feedback.correct
+                    ? 'bg-success/8 border-success/30'
+                    : 'bg-danger/8 border-danger/30'
+                }`}
+              >
+                {/* Mini avatar */}
+                <div className="w-8 h-8 rounded-full bg-accent/20 text-accent flex items-center justify-center text-xs font-mono flex-shrink-0 mt-0.5">
+                  ≋
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-mono text-muted mb-1.5">Narrator</p>
+                  <TypewriterText
+                    text={feedback.text}
+                    speed={55}
+                    className="text-sm text-subtle leading-relaxed"
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {answered && (
             <motion.button

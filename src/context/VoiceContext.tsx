@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from 'react'
-import { useSarvamVoice } from '../hooks/useSarvamVoice'
+import { useTTS } from '../hooks/useTTS'
 import type { VoiceCharacter } from '../types'
 
 interface VoiceContextValue {
@@ -13,7 +13,7 @@ interface VoiceContextValue {
 const VoiceContext = createContext<VoiceContextValue | null>(null)
 
 export function VoiceProvider({ children }: { children: React.ReactNode }) {
-  const voice = useSarvamVoice()
+  const voice = useTTS()
   return <VoiceContext.Provider value={voice}>{children}</VoiceContext.Provider>
 }
 
