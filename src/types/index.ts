@@ -22,6 +22,7 @@ export interface ConceptCard {
 // ─── Widget types ────────────────────────────────────────────────────────────
 export type WidgetType =
   | 'brief-classifier'
+  | 'interview-decoder'
   | 'threshold-slider'
   | 'drag-rank'
   | 'unit-economics'

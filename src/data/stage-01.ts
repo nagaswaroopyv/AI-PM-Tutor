@@ -261,6 +261,358 @@ The PM adds it to the next sprint as the primary goal.`,
         },
       ],
     },
+
+    // ─── Session 1.2: User Pain Mapping ──────────────────────────────────────
+    {
+      id: '1.2',
+      title: 'User Pain Mapping',
+      totalXP: 350,
+
+      widget: {
+        type: 'interview-decoder',
+        title: 'Decode the interviews',
+        subtitle: 'You ran 5 interviews with lapsed Axis Corp learners. For each quote, identify the underlying job — not what they said, what they actually needed.',
+        config: {
+          context: `Axis Corp's $400K renewal is 10 weeks away. You spent the last 5 days interviewing learners
+who enrolled through Axis Corp but stopped using SkillPath within 8 weeks. The CPO's hypothesis:
+"They didn't know what to take next." Your job: find out what's really going on.`,
+
+          quotes: [
+            {
+              id: 'aditya',
+              speaker: 'Aditya, 31 · Data analyst at Axis Corp · Stopped after 4 weeks',
+              quote: `I had three courses open at once. By week 3 I genuinely had no idea what
+I was supposed to do first. So I just… stopped opening the app.`,
+              cluster: 'direction',
+              jobs: [
+                {
+                  id: 'a-recommendations',
+                  label: 'Help me discover better courses I haven\'t found yet',
+                  isCorrect: false,
+                  explanation: `Aditya wasn't struggling to find courses — he had three open. The problem was having no structure to make progress through them. Discovery isn't the job here.`,
+                },
+                {
+                  id: 'a-progress',
+                  label: 'Give me a clear path so I can make visible progress toward something',
+                  isCorrect: true,
+                  explanation: `The job is structured progress, not content discovery. Aditya needed a "what's next" not a "what else exists." A recommendation engine adds more options to someone already overwhelmed by options.`,
+                },
+                {
+                  id: 'a-reminders',
+                  label: 'Remind me to come back and continue studying',
+                  isCorrect: false,
+                  explanation: `Reminders treat a motivation problem as a scheduling problem. Aditya stopped because he had no direction — not because he forgot the app existed.`,
+                },
+              ],
+            },
+            {
+              id: 'sneha',
+              speaker: 'Sneha, 26 · Product associate at Axis Corp · Completed 2 of 7 enrolled courses',
+              quote: `I'd open the app on the train, look at the course list, and just close it.
+There was no pull. Like, I couldn't feel myself getting anywhere.`,
+              cluster: 'motivation',
+              jobs: [
+                {
+                  id: 's-shorter',
+                  label: 'Give me shorter, bite-sized content that fits into my commute',
+                  isCorrect: false,
+                  explanation: `Sneha was already opening the app on her commute — content length isn't the issue. The absence of "pull" is a motivation and progress signal problem, not a format problem.`,
+                },
+                {
+                  id: 's-meaning',
+                  label: 'Show me I\'m making real progress toward a goal that matters',
+                  isCorrect: true,
+                  explanation: `"Couldn't feel myself getting anywhere" is the clearest JTBD signal in this set. Sneha needs a feedback loop that connects daily effort to meaningful progress — not more content to choose from.`,
+                },
+                {
+                  id: 's-recommend',
+                  label: 'Recommend what I should study based on my role',
+                  isCorrect: false,
+                  explanation: `Role-based recommendations address content relevance. Sneha's problem is motivational — she doesn't feel progress even from the courses she is taking. Relevance won't fix that.`,
+                },
+              ],
+            },
+            {
+              id: 'rahul',
+              speaker: 'Rahul, 34 · Engineering manager at Axis Corp · Churned after 10 weeks',
+              quote: `My company paid for this. My manager never brings it up in 1:1s.
+After a while I thought — if nobody at work cares, why am I doing this?`,
+              cluster: 'motivation',
+              jobs: [
+                {
+                  id: 'r-cert',
+                  label: 'Get a certificate I can show my employer',
+                  isCorrect: false,
+                  explanation: `Certificates address proof of completion, not the absence of workplace reinforcement. Rahul's job isn't to earn a badge — it's for learning to feel connected to something his employer values.`,
+                },
+                {
+                  id: 'r-career',
+                  label: 'Connect my learning to outcomes my employer actually recognises',
+                  isCorrect: true,
+                  explanation: `Rahul hired SkillPath to advance at work. When work didn't acknowledge the learning, the job stopped getting done. The solution space is manager integration and career relevance — not content quality or recommendations.`,
+                },
+                {
+                  id: 'r-content',
+                  label: 'Improve the quality and depth of course content',
+                  isCorrect: false,
+                  explanation: `Content quality isn't Rahul's pain — he never complained about what he was learning. The job breakdown happened at the "does this connect to my career" layer, not the "is the content good" layer.`,
+                },
+              ],
+            },
+            {
+              id: 'meera',
+              speaker: 'Meera, 29 · UX designer at Axis Corp · Accessed platform 3 times before churning',
+              quote: `I know exactly what I want to learn — service design. I searched for it,
+got twelve results with confusing titles. Clicked the first one, it wasn't right.
+I gave up and went to YouTube.`,
+              cluster: 'navigation',
+              jobs: [
+                {
+                  id: 'm-discover',
+                  label: 'Recommend courses I haven\'t thought of yet',
+                  isCorrect: false,
+                  explanation: `Meera knew exactly what she wanted. This is the opposite of a discovery problem — she had a clear intent and the product failed to fulfil it. A recommendation engine would show her things she didn't ask for.`,
+                },
+                {
+                  id: 'm-find',
+                  label: 'Find the specific content I\'m looking for without friction',
+                  isCorrect: true,
+                  explanation: `Classic search and findability failure. Meera had intent, search returned ambiguous results, and she abandoned the platform. The job is "locate what I already know I want" — a search UX problem, not a recommendation problem.`,
+                },
+                {
+                  id: 'm-browse',
+                  label: 'Browse a well-organised course library by topic',
+                  isCorrect: false,
+                  explanation: `Browsing is for exploration. Meera was on a specific mission. Organisation helps browsers; search precision helps someone who knows exactly what they want.`,
+                },
+              ],
+            },
+            {
+              id: 'kiran',
+              speaker: 'Kiran, 27 · Front-end developer at Axis Corp · Completed 1 of 4 enrolled courses',
+              quote: `I finished the React course. It was actually good. But then I just kind of
+didn't know what to do with it. There was no project, no way to prove I'd learned anything.
+It felt like it disappeared.`,
+              cluster: 'application',
+              jobs: [
+                {
+                  id: 'k-path',
+                  label: 'Give me a structured learning path to follow after this course',
+                  isCorrect: false,
+                  explanation: `Kiran completed the course fine — the learning path worked. The failure happened after completion, when there was no bridge between "I learned this" and "I can show I can do this." A next-course path doesn't solve an application problem.`,
+                },
+                {
+                  id: 'k-apply',
+                  label: 'Bridge what I\'ve learned to something real I can demonstrate',
+                  isCorrect: true,
+                  explanation: `"It felt like it disappeared" — Kiran needed the learning to produce an artefact: a project, a skill assessment, something tangible. The job is application and proof, not more content consumption.`,
+                },
+                {
+                  id: 'k-next',
+                  label: 'Recommend what to take next based on what I just completed',
+                  isCorrect: false,
+                  explanation: `Recommending the next course sends Kiran deeper into consumption without solving the application gap. More learning before the current learning has "landed" compounds the problem.`,
+                },
+              ],
+            },
+          ],
+
+          clusters: [
+            {
+              id: 'direction',
+              label: 'No clear direction',
+              description: 'Learners have too many options and no structure to make progress through them.',
+              implication: '→ Goal-setting or guided path feature — not a recommendation engine',
+              color: 'accent',
+            },
+            {
+              id: 'motivation',
+              label: 'Motivation & career connection',
+              description: 'Learners can\'t see how their effort connects to career progress or workplace recognition.',
+              implication: '→ Progress visibility, manager integration — not content discovery',
+              color: 'warning',
+            },
+            {
+              id: 'navigation',
+              label: 'Search & findability',
+              description: 'Learners with clear intent can\'t find what they\'re looking for.',
+              implication: '→ Search UX improvement — simpler than a recommendation engine, faster to ship',
+              color: 'danger',
+            },
+            {
+              id: 'application',
+              label: 'No bridge to application',
+              description: 'Learners complete content but have no way to apply or prove what they\'ve learned.',
+              implication: '→ Projects, assessments, portfolio features — not more content',
+              color: 'success',
+            },
+          ],
+
+          insight: `The CPO's hypothesis was "learners don't know what to take next" — a discovery problem.
+Your research found 4 distinct root causes, only one of which a recommendation engine addresses.
+The dominant pain (3 of 5 learners) is motivation and direction — not content discovery.
+Building the recommended solution would have solved 1 of 5 learners' actual jobs.`,
+        },
+      },
+
+      concept: {
+        id: 'user-pain-mapping',
+        term: 'User Pain Mapping',
+        tagline: 'What users say they want is rarely what they actually need.',
+        definition: `User pain mapping is the practice of looking beneath surface complaints to identify
+the underlying job a user is trying to accomplish. Users describe symptoms —
+"I don't know what to take next" — but the real job is "help me feel like I'm making
+progress toward something that matters in my career." The job determines the solution space.
+Getting it wrong means building the right product for the wrong problem.`,
+        mentalModel: `People hire products like they hire employees — to do a specific job.
+When a SkillPath learner enrols, they're not hiring it for content. They're hiring it
+to get better at their job and prove it to their manager. The moment the product stops
+doing that job, they fire it. Churn isn't disengagement — it's a resignation letter.
+Your job in discovery is to find out what role the product was hired for.`,
+        pmTakeaway: `"Before we commit to any solution direction, I want to run 8-10 JTBD interviews
+with lapsed users. Not 'why did you stop?' — that gets rationalisations. Instead:
+'What were you trying to accomplish when you first signed up, and when did you realise
+this wasn't going to do it?' That answer tells us what job we're actually solving for."`,
+        category: 'discovery',
+      },
+
+      decisionTree: {
+        startId: 'root',
+        nodes: {
+          root: {
+            id: 'root',
+            question: `You've run 10 interviews with lapsed Axis Corp learners. 7 of 10 describe
+some version of "I couldn't see how this connected to my career." Only 2 mentioned
+not knowing which course to take next. You're presenting findings to the CPO tomorrow.
+What do you recommend?`,
+            hint: 'The CPO already expects a recommendation engine. What does the evidence say?',
+            options: [
+              {
+                label: 'The recommendation engine is still valid — better course matching will improve relevance, which will improve motivation.',
+                nextId: 'a1',
+                consequence: 'You\'ve conflated relevance and motivation. They\'re different jobs.',
+              },
+              {
+                label: '"The dominant pain is career progress visibility — not content discovery. I recommend we test a \'learning goals\' feature before committing to an ML recommendation engine."',
+                nextId: 'end-good',
+                consequence: 'You let the research lead. That\'s exactly the right move.',
+              },
+              {
+                label: 'The findings are valuable but the CPO has committed to AI. I\'ll incorporate JTBD insights into the recommendation engine PRD.',
+                nextId: 'c1',
+                consequence: 'You\'re letting the solution constraint override the evidence.',
+              },
+            ],
+          },
+          a1: {
+            id: 'a1',
+            question: `The CPO pushes back: "But aren't motivation and relevance the same thing?
+If we recommend more relevant courses, won't learners be more motivated to finish them?"
+How do you respond?`,
+            options: [
+              {
+                label: '"That\'s a reasonable hypothesis — let\'s include it in the PRD and validate through the model\'s performance."',
+                nextId: 'end-ok',
+              },
+              {
+                label: '"Relevance and motivation are different jobs. A highly relevant course you never finish delivers the same business outcome as an irrelevant one. The research shows motivation is tied to career visibility — not whether the course was a good fit."',
+                nextId: 'end-good',
+              },
+            ],
+          },
+          c1: {
+            id: 'c1',
+            question: `The recommendation engine ships 3 months later. Completion rates don't move.
+Axis Corp doesn't renew the $400K contract. The CPO asks what happened.
+How do you respond?`,
+            options: [
+              {
+                label: '"The model needs more training data — we should extend the timeline and retrain."',
+                nextId: 'end-bad',
+              },
+              {
+                label: '"The research flagged this risk before we built it. The core job was career progress visibility, not content discovery. We built a solution to a problem that affected 2 of 10 lapsed learners. Here\'s what I think we need to build instead."',
+                nextId: 'end-ok',
+              },
+            ],
+          },
+        },
+        outcomes: {
+          'end-good': {
+            type: 'good',
+            title: 'Sharp PM thinking',
+            explanation: `You translated messy qualitative research into a directional recommendation — and had the conviction to push back on an existing solution commitment with evidence. The hardest skill in discovery is saying "the research points somewhere else" before the team has built anything. That's always cheaper than saying it after.`,
+            xp: 100,
+          },
+          'end-ok': {
+            type: 'ok',
+            title: 'Right instinct, late delivery',
+            explanation: `You identified the gap but either stopped short of the recommendation or delivered it too late to change the outcome. Research is only valuable if it changes the direction before the team commits — not after they've shipped and a $400K account has churned.`,
+            xp: 60,
+          },
+          'end-bad': {
+            type: 'bad',
+            title: 'Misdiagnosed the failure',
+            explanation: `The research gave you the answer before the build started. Attributing failure to model quality — when the root cause was solving the wrong problem — leads teams to invest another two quarters refining a solution to a problem users don't actually have.`,
+            xp: 20,
+          },
+        },
+      },
+
+      quiz: [
+        {
+          id: 'q1-3',
+          scenario: `A food delivery app sees order cancellations spike 22% in the first 15 minutes after
+placing an order. The PM proposes "real-time AI tracking to show users exactly where their
+food is at every stage." Exit interviews reveal: "I cancel because I\'m not sure if the
+restaurant actually received my order."`,
+          question: 'What does the JTBD framework tell you, and does it change the solution direction?',
+          options: [
+            {
+              label: 'Real-time tracking solves both order confirmation and delivery location, so the AI solution addresses the pain.',
+              correct: false,
+              explanation: `These are two different jobs: "confirm my order was received" and "see where my delivery is." Conflating them means building a complex solution to a simple problem. The first job is solved by an order confirmation message — 2 days of engineering. The second is real-time tracking. They are not the same.`,
+            },
+            {
+              label: 'The job is "confirm my order is being prepared" — not "track my delivery in real-time." An order confirmation screen solves this in days. The AI tracking solution solves a different, less urgent job.',
+              correct: true,
+              explanation: `Correct. The JTBD is certainty at the moment of vulnerability (right after placing an order), not real-time visibility throughout the journey. Solving the right job is cheaper, faster, and more directly connected to the cancellation metric.`,
+            },
+            {
+              label: 'Exit interview data is unreliable at this scale — stick with the quantitative cancellation data and build the AI tracking.',
+              correct: false,
+              explanation: `Quantitative data tells you what is happening. Qualitative JTBD interviews tell you why. Discarding the why means you'll optimise for the wrong metric. The 22% cancellation rate is the signal; "not sure if restaurant got my order" is the cause.`,
+            },
+          ],
+          xp: 75,
+        },
+        {
+          id: 'q1-4',
+          scenario: `A B2B HR platform sees a 40% drop in managers completing performance reviews.
+The CPO says: "Managers are probably intimidated by the blank page — let's add AI to
+auto-generate review templates." The PM is asked to scope the feature.`,
+          question: 'What is the right PM response before scoping begins?',
+          options: [
+            {
+              label: 'Validate the "blank page" hypothesis with 6-8 JTBD interviews before scoping the AI feature. The job isn\'t "fill in a template" — it\'s "have a useful performance conversation without it being uncomfortable."',
+              correct: true,
+              explanation: `The CPO has a plausible hypothesis — but it's still a hypothesis. The job to be done here is much broader than the blank page: managers want performance conversations to feel worthwhile and not adversarial. An AI template might help — or the real pain might be that managers don't know what good feedback sounds like, which requires a different solution entirely.`,
+            },
+            {
+              label: 'Build the AI template generator — it\'s a reasonable hypothesis and relatively low effort to test in production.',
+              correct: false,
+              explanation: `Low effort to build is not the same as solving the right problem. If the job is "have a meaningful conversation" and the AI template produces generic output, completion rates may rise while quality and manager trust fall. You'd be measuring the wrong thing.`,
+            },
+            {
+              label: 'Run a survey asking managers to rate what they find most difficult about performance reviews.',
+              correct: false,
+              explanation: `Surveys confirm hypotheses — they rarely surface new ones. A manager given options like "blank page / time / knowing what to say" will pick one, not reveal that the real issue is they don't believe reviews change anything. JTBD interviews surface the job; surveys measure it.`,
+            },
+          ],
+          xp: 75,
+        },
+      ],
+    },
   ],
 }
 

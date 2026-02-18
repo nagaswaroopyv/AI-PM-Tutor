@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle, ArrowLeft } from 'lucide-react'
 import type { SessionData } from '../types'
 import BriefClassifier from '../components/widgets/BriefClassifier'
+import InterviewDecoder from '../components/widgets/InterviewDecoder'
 import ConceptCard from '../components/ConceptCard'
 import DecisionTree from '../components/DecisionTree'
 import Quiz from '../components/Quiz'
@@ -28,7 +29,8 @@ export default function SessionPlayer({ session, stageTitle, onBack, onComplete 
       onComplete: () => setPhase('concept'),
     }
     switch (session.widget.type) {
-      case 'brief-classifier': return <BriefClassifier {...props} />
+      case 'brief-classifier':  return <BriefClassifier  {...props} />
+      case 'interview-decoder': return <InterviewDecoder {...props} />
       default: return <p className="text-muted text-sm">Widget not yet implemented.</p>
     }
   }
