@@ -208,6 +208,21 @@ there are 400 courses and no structure." What's your next move?`,
         },
       },
 
+      phaseIntros: {
+        widget: {
+          character: 'priya',
+          text: `Hey — just got back from the offsite. Excited about where we're going with AI.\n\nI've dropped my thoughts in Slack. Before anyone writes a single line of code, I need you to read this carefully.\n\nTell me what's a real problem, what's an assumption, what's a solution I've already decided on, and what's information we're missing. Can you do that?`,
+        },
+        concept: {
+          character: 'coach',
+          text: `Nice work on the brief.\n\nHere's what you just practiced: Problem Framing. Most PMs skip this step. They read a message like Priya's and start scoping a solution the same day.\n\nThe discipline is separating what's real from what's assumed — before anyone opens a Jira ticket.`,
+        },
+        tree: {
+          character: 'priya',
+          text: `Okay, so you've read my message and broken it down.\n\nNow I need that brief by Friday. The question is — what's your first move?\n\nThis is where I see PMs go wrong. Some of them come back to me on Friday with a recommendation engine spec. Others ask the right question first.\n\nWhat would you do?`,
+        },
+      },
+
       quiz: [
         {
           id: 'q1-1',
@@ -546,6 +561,21 @@ How do you respond?`,
             explanation: `The research gave you the answer before the build started. Attributing failure to model quality — when the root cause was solving the wrong problem — leads teams to invest another two quarters refining a solution to a problem users don't actually have.`,
             xp: 20,
           },
+        },
+      },
+
+      phaseIntros: {
+        widget: {
+          character: 'coach',
+          text: `You've been in the field for 5 days.\n\nFive interviews with Axis Corp learners who enrolled and then stopped using SkillPath within 8 weeks. Five very different people. Five very different stories.\n\nFor each quote, your job is to find the real job they were trying to get done — not what they said on the surface, but what they actually needed SkillPath to do for them.`,
+        },
+        concept: {
+          character: 'coach',
+          text: `What you just uncovered is User Pain Mapping.\n\nHere's the key insight: people don't hire products for features. They hire them to do a job. When SkillPath stopped doing that job, they stopped showing up.\n\nChurn isn't disengagement. It's a resignation letter. Your job in discovery is to find out what role the product was hired for — and whether it's actually doing it.`,
+        },
+        tree: {
+          character: 'priya',
+          text: `Alright, talk me through what you found.\n\nTen interviews. Seven of ten said something like: "I couldn't see how this connected to my career."\n\nOnly two mentioned not knowing which course to take next. That's the thing I said we should solve.\n\nI'll be honest — I came into this meeting expecting you to validate the recommendation engine. What does your research say?`,
         },
       },
 

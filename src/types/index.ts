@@ -73,6 +73,18 @@ export interface QuizQuestion {
   xp: number
 }
 
+// ─── Per-phase character intro lines ─────────────────────────────────────────
+export interface PhaseIntro {
+  character: 'priya' | 'coach'
+  text: string
+}
+
+export interface PhaseIntros {
+  widget?: PhaseIntro
+  concept?: PhaseIntro
+  tree?: PhaseIntro
+}
+
 // ─── Session (a single ~20-min learning session) ──────────────────────────────
 export interface SessionData {
   id: string           // e.g. "1.1", "2.3"
@@ -82,6 +94,7 @@ export interface SessionData {
   concept: ConceptCard
   decisionTree?: DecisionTree
   quiz: QuizQuestion[]
+  phaseIntros?: PhaseIntros
 }
 
 // ─── Stage (a lifecycle phase containing sessions) ────────────────────────────

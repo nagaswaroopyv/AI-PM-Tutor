@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle, ArrowLeft } from 'lucide-react'
 import type { SessionData } from '../types'
@@ -7,6 +7,7 @@ import InterviewDecoder from '../components/widgets/InterviewDecoder'
 import ConceptCard from '../components/ConceptCard'
 import DecisionTree from '../components/DecisionTree'
 import Quiz from '../components/Quiz'
+import CharacterBubble from '../components/CharacterBubble'
 
 type Phase = 'widget' | 'concept' | 'tree' | 'quiz' | 'done'
 
@@ -18,10 +19,22 @@ interface Props {
 }
 
 export default function SessionPlayer({ session, stageTitle, onBack, onComplete }: Props) {
-  const [phase, setPhase]       = useState<Phase>('widget')
-  const [xpEarned, setXpEarned] = useState(0)
+  const [phase, setPhase]           = useState<Phase>('widget')
+  const [xpEarned, setXpEarned]     = useState(0)
+  const [introShown, setIntroShown] = useState(false)
 
   const addXP = (amount: number) => setXpEarned(x => x + amount)
+
+  // Reset intro gate whenever phase changes
+  useEffect(() => { setIntroShown(false) }, [phase])
+
+  const currentIntro =
+    phase !== 'done' && phase !== 'quiz'
+      ? session.phaseIntros?.[phase as 'widget' | 'concept' | 'tree']
+      : undefined
+
+  // If no intro for this phase, content shows straight away
+  const contentVisible = !currentIntro || introShown
 
   const renderWidget = () => {
     const props = { widget: session.widget, onComplete: () => setPhase('concept') }
@@ -32,7 +45,7 @@ export default function SessionPlayer({ session, stageTitle, onBack, onComplete 
     }
   }
 
-  // ─── Completion screen ───────────────────────────────────────────────────────
+  // ─── Completion screen ──────────────────────────────────────────────────────
   if (phase === 'done') {
     const pct = Math.round((xpEarned / session.totalXP) * 100)
     return (
@@ -87,11 +100,11 @@ export default function SessionPlayer({ session, stageTitle, onBack, onComplete 
     )
   }
 
-  // ─── Active session ──────────────────────────────────────────────────────────
+  // ─── Active session ─────────────────────────────────────────────────────────
   return (
     <div className="max-w-2xl mx-auto space-y-6">
 
-      {/* Back + session header */}
+      {/* Back + header */}
       <div className="space-y-4">
         <button
           onClick={onBack}
@@ -100,7 +113,6 @@ export default function SessionPlayer({ session, stageTitle, onBack, onComplete 
           <ArrowLeft size={14} />
           {stageTitle}
         </button>
-
         <div className="space-y-1">
           <span className="text-xs font-mono text-muted uppercase tracking-widest">
             Session {session.id}
@@ -109,7 +121,6 @@ export default function SessionPlayer({ session, stageTitle, onBack, onComplete 
         </div>
       </div>
 
-      {/* Phase content */}
       <AnimatePresence mode="wait">
         <motion.div
           key={phase}
@@ -121,57 +132,79 @@ export default function SessionPlayer({ session, stageTitle, onBack, onComplete 
         >
           <PhaseLabel phase={phase} widgetTitle={session.widget.title} />
 
-          {phase === 'widget' && (
-            <div className="space-y-3">
-              <p className="text-sm text-muted">{session.widget.subtitle}</p>
-              {renderWidget()}
-            </div>
-          )}
-
-          {phase === 'concept' && (
-            <ConceptCard
-              concept={session.concept}
-              onContinue={() => {
-                if (session.decisionTree) setPhase('tree')
-                else setPhase('quiz')
-              }}
-              continueLabel={session.decisionTree ? 'Try the scenario →' : 'Test yourself →'}
+          {/* ── Character intro — shown before phase content ── */}
+          {currentIntro && (
+            <CharacterBubble
+              key={`${phase}-intro`}
+              character={currentIntro.character}
+              text={currentIntro.text}
+              onDone={() => setIntroShown(true)}
             />
           )}
 
-          {phase === 'tree' && session.decisionTree && (
-            <DecisionTree
-              tree={session.decisionTree}
-              onComplete={(xp) => { addXP(xp); setPhase('quiz') }}
-            />
-          )}
-
-          {phase === 'quiz' && (
-            <Quiz
-              questions={session.quiz}
-              onComplete={(xp) => { addXP(xp); setPhase('done') }}
-            />
-          )}
-
-          {/* Skip link — lets you advance past any phase without completing it */}
-          {(phase === 'widget' || phase === 'concept' || phase === 'tree') && (
-            <div className="flex justify-end pt-1">
-              <button
-                onClick={() => {
-                  if (phase === 'widget')  setPhase('concept')
-                  if (phase === 'concept') setPhase(session.decisionTree ? 'tree' : 'quiz')
-                  if (phase === 'tree')    setPhase('quiz')
-                }}
-                className="text-xs text-muted/40 hover:text-muted font-mono transition-colors"
+          {/* ── Phase content — fades in after intro finishes ── */}
+          <AnimatePresence>
+            {contentVisible && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-4"
               >
-                skip →
-              </button>
-            </div>
-          )}
+                {phase === 'widget' && (
+                  <div className="space-y-3">
+                    <p className="text-sm text-muted">{session.widget.subtitle}</p>
+                    {renderWidget()}
+                  </div>
+                )}
+
+                {phase === 'concept' && (
+                  <ConceptCard
+                    concept={session.concept}
+                    onContinue={() => {
+                      if (session.decisionTree) setPhase('tree')
+                      else setPhase('quiz')
+                    }}
+                    continueLabel={session.decisionTree ? 'Try the scenario →' : 'Test yourself →'}
+                  />
+                )}
+
+                {phase === 'tree' && session.decisionTree && (
+                  <DecisionTree
+                    tree={session.decisionTree}
+                    onComplete={(xp) => { addXP(xp); setPhase('quiz') }}
+                  />
+                )}
+
+                {phase === 'quiz' && (
+                  <Quiz
+                    questions={session.quiz}
+                    onComplete={(xp) => { addXP(xp); setPhase('done') }}
+                  />
+                )}
+
+                {/* Skip link */}
+                {(phase === 'widget' || phase === 'concept' || phase === 'tree') && (
+                  <div className="flex justify-end pt-1">
+                    <button
+                      onClick={() => {
+                        if (phase === 'widget')  setPhase('concept')
+                        if (phase === 'concept') setPhase(session.decisionTree ? 'tree' : 'quiz')
+                        if (phase === 'tree')    setPhase('quiz')
+                      }}
+                      className="text-xs text-muted/40 hover:text-muted font-mono transition-colors"
+                    >
+                      skip →
+                    </button>
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       </AnimatePresence>
 
-      {/* XP progress bar */}
+      {/* XP bar */}
       <div className="flex items-center gap-3 pt-2">
         <span className="text-xs text-muted font-mono">{xpEarned} XP</span>
         <div className="flex-1 bg-border rounded-full h-1.5">
@@ -187,14 +220,13 @@ export default function SessionPlayer({ session, stageTitle, onBack, onComplete 
   )
 }
 
-// ─── Phase label ──────────────────────────────────────────────────────────────
 function PhaseLabel({ phase, widgetTitle }: { phase: Phase; widgetTitle: string }) {
   const labels: Record<Phase, { tag: string; title: string; color: string }> = {
-    widget:  { tag: '01', title: widgetTitle, color: 'text-accent'   },
-    concept: { tag: '02', title: 'Concept',   color: 'text-warning'  },
-    tree:    { tag: '03', title: 'Scenario',  color: 'text-success'  },
-    quiz:    { tag: '04', title: 'Apply it',  color: 'text-success'  },
-    done:    { tag: '✓',  title: 'Complete',  color: 'text-success'  },
+    widget:  { tag: '01', title: widgetTitle, color: 'text-accent'  },
+    concept: { tag: '02', title: 'Concept',   color: 'text-warning' },
+    tree:    { tag: '03', title: 'Scenario',  color: 'text-success' },
+    quiz:    { tag: '04', title: 'Apply it',  color: 'text-success' },
+    done:    { tag: '✓',  title: 'Complete',  color: 'text-success' },
   }
   const l = labels[phase]
   return (
